@@ -22,6 +22,11 @@ bool peLoader(const char *exePath, const wchar_t* cmdline)
 	printf("[+] Exe File Prefer Image Base at %x\n", preferAddr);
 
 	HMODULE dll = LoadLibraryA("ntdll.dll");
+
+	if (!dll){
+		printf("[-] Couldn't load ntdll.\n");
+		return false;
+	}
 	((int(WINAPI*)(HANDLE, PVOID))GetProcAddress(dll, "NtUnmapViewOfSection"))((HANDLE)-1, (LPVOID)ntHeader->OptionalHeader.ImageBase);
 	
 	pImageBase = (BYTE *)VirtualAlloc(preferAddr, ntHeader->OptionalHeader.SizeOfImage, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
@@ -68,7 +73,11 @@ bool peLoader(const char *exePath, const wchar_t* cmdline)
 	size_t retAddr = (size_t)(pImageBase)+ntHeader->OptionalHeader.AddressOfEntryPoint;
 	printf("Run Exe Module: %s\n", exePath);
 
-	((void(*)())retAddr)();
+	printf("This PID is: %d\n", GetCurrentProcessId());
+
+	int entrypointresult = ((int(*)())retAddr)();
+	if (entrypointresult)
+		printf("This is the return code %x", entrypointresult);
 }
 
 int main(int argc, char **argv)
@@ -80,7 +89,10 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	peLoader(argv[1], NULL);
+	const char* exePath = "C:\\Program Files\\Git\\usr\\bin\\ls.exe";
+	//const char* exePath = "C:\\windows\\system32\\net.exe";
+
+	peLoader(exePath, NULL);
 	getchar();
     return 0;
 }
