@@ -89,8 +89,8 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	const char* exePath = "C:\\Program Files\\Git\\usr\\bin\\ls.exe";
-	//const char* exePath = "C:\\windows\\system32\\net.exe";
+	//const char* exePath = "C:\\Program Files\\Git\\usr\\bin\\ls.exe";
+	const char* exePath = "C:\\windows\\system32\\net.exe";
 
 	peLoader(exePath, NULL);
 	getchar();
